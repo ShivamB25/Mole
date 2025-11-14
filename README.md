@@ -21,9 +21,9 @@
 
 - **Deep System Cleanup** - Cleans way more junk than CleanMyMac/Lemon - caches, logs, temp files
 - **Thorough Uninstall** - Scans 22+ locations to remove app leftovers, not just the .app file
+- **System Optimization** - Rebuilds caches, resets services, and trims swap/network cruft with one run
 - **Interactive Disk Analyzer** - Navigate folders with arrow keys, find and delete large files quickly
 - **Fast & Lightweight** - Terminal-based with arrow-key navigation, pagination, and Touch ID support
-- **System Optimization** - Rebuilds caches, resets services, and trims swap/network cruft with one run
 
 ## Quick Start
 
@@ -47,8 +47,8 @@ mo clean                # System cleanup
 mo clean --dry-run      # Preview mode
 mo clean --whitelist    # Manage protected caches
 mo uninstall            # Uninstall apps
-mo analyze              # Disk analyzer
 mo optimize             # System optimization
+mo analyze              # Disk analyzer
 
 mo touchid              # Configure Touch ID for sudo
 mo update               # Update Mole
@@ -120,22 +120,6 @@ Space freed: 12.8GB
 ====================================================================
 ```
 
-### Disk Space Analyzer
-
-```bash
-$ mo analyze
-
-Analyze Disk  ~/Documents  |  Total: 156.8GB
-
- ▶  1. ███████████████████  48.2%  |  📁 Library                     75.4GB  >6mo
-    2. ██████████░░░░░░░░░  22.1%  |  📁 Downloads                   34.6GB
-    3. ████░░░░░░░░░░░░░░░  14.3%  |  📁 Movies                      22.4GB
-    4. ███░░░░░░░░░░░░░░░░  10.8%  |  📁 Documents                   16.9GB
-    5. ██░░░░░░░░░░░░░░░░░   5.2%  |  📄 backup_2023.zip              8.2GB
-
-  ↑↓←→ Navigate  |  O Open  |  F Reveal  |  ⌫ Delete  |  L Large(24)  |  Q Quit
-```
-
 ### System Optimization
 
 ```bash
@@ -153,6 +137,22 @@ System: 5/32 GB RAM | 333/460 GB Disk (72%) | Uptime 6d
 ====================================================================
 System optimization completed
 ====================================================================
+```
+
+### Disk Space Analyzer
+
+```bash
+$ mo analyze
+
+Analyze Disk  ~/Documents  |  Total: 156.8GB
+
+ ▶  1. ███████████████████  48.2%  |  📁 Library                     75.4GB  >6mo
+    2. ██████████░░░░░░░░░  22.1%  |  📁 Downloads                   34.6GB
+    3. ████░░░░░░░░░░░░░░░  14.3%  |  📁 Movies                      22.4GB
+    4. ███░░░░░░░░░░░░░░░░  10.8%  |  📁 Documents                   16.9GB
+    5. ██░░░░░░░░░░░░░░░░░   5.2%  |  📄 backup_2023.zip              8.2GB
+
+  ↑↓←→ Navigate  |  O Open  |  F Reveal  |  ⌫ Delete  |  L Large(24)  |  Q Quit
 ```
 
 ## Support

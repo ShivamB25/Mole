@@ -169,17 +169,6 @@ check_swap_cleanup() {
     fi
 }
 
-# Check login items
-check_login_items() {
-    local items
-    items=$(osascript -e 'tell application "System Events" to get the name of every login item' 2>/dev/null || echo "")
-
-    [[ -z "$items" || "$items" == "missing value" ]] && return
-
-    local count=$(echo "$items" | tr ',' '\n' | grep -v '^[[:space:]]*$' | wc -l | tr -d ' ')
-    [[ $count -gt 0 ]] && echo "login_items|Login Items|Review ${count} login items|true"
-}
-
 # Check local snapshots
 check_local_snapshots() {
     command -v tmutil >/dev/null 2>&1 || return
@@ -253,7 +242,6 @@ EOF
     item=$(check_mail_downloads || true); [[ -n "$item" ]] && items+=("$item")
     item=$(check_saved_state || true); [[ -n "$item" ]] && items+=("$item")
     item=$(check_swap_cleanup || true); [[ -n "$item" ]] && items+=("$item")
-    item=$(check_login_items || true); [[ -n "$item" ]] && items+=("$item")
     item=$(check_local_snapshots || true); [[ -n "$item" ]] && items+=("$item")
     item=$(check_developer_cleanup || true); [[ -n "$item" ]] && items+=("$item")
 

@@ -132,11 +132,11 @@ show_help() {
     echo
     printf "%s%s%s\n" "$BLUE" "COMMANDS" "$NC"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo" "$NC" "Interactive main menu"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize" "$NC" "System health check & optimization"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo clean" "$NC" "Deeper system cleanup"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --dry-run" "$NC" "Preview cleanup (no deletions)"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --whitelist" "$NC" "Manage protected caches"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo uninstall" "$NC" "Remove applications completely"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize" "$NC" "System health check & optimization"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo analyze" "$NC" "Interactive disk space explorer"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo touchid" "$NC" "Configure Touch ID for sudo"
     printf "  %s%-28s%s %s\n" "$GREEN" "mo update" "$NC" "Update Mole to the latest version"
@@ -455,8 +455,8 @@ show_main_menu() {
 
     printf '\r\033[2K%s\n' "$(show_menu_option 1 "Clean Mac - Remove junk files and optimize" "$([[ $selected -eq 1 ]] && echo true || echo false)")"
     printf '\r\033[2K%s\n' "$(show_menu_option 2 "Uninstall Apps - Remove applications completely" "$([[ $selected -eq 2 ]] && echo true || echo false)")"
-    printf '\r\033[2K%s\n' "$(show_menu_option 3 "Analyze Disk - Interactive space explorer" "$([[ $selected -eq 3 ]] && echo true || echo false)")"
-    printf '\r\033[2K%s\n' "$(show_menu_option 4 "Optimize Mac - System health & tuning" "$([[ $selected -eq 4 ]] && echo true || echo false)")"
+    printf '\r\033[2K%s\n' "$(show_menu_option 3 "Optimize Mac - System health & tuning" "$([[ $selected -eq 3 ]] && echo true || echo false)")"
+    printf '\r\033[2K%s\n' "$(show_menu_option 4 "Analyze Disk - Interactive space explorer" "$([[ $selected -eq 4 ]] && echo true || echo false)")"
 
     if [[ -t 0 ]]; then
         printf '\r\033[2K\n'
@@ -527,8 +527,8 @@ interactive_main_menu() {
                 case $current_option in
                     1) exec "$SCRIPT_DIR/bin/clean.sh" ;;
                     2) exec "$SCRIPT_DIR/bin/uninstall.sh" ;;
-                    3) exec "$SCRIPT_DIR/bin/analyze.sh" ;;
-                    4) exec "$SCRIPT_DIR/bin/optimize.sh" ;;
+                    3) exec "$SCRIPT_DIR/bin/optimize.sh" ;;
+                    4) exec "$SCRIPT_DIR/bin/analyze.sh" ;;
                 esac
                 ;;
             "h" | "H")
@@ -543,8 +543,8 @@ interactive_main_menu() {
                 case $key in
                     1) exec "$SCRIPT_DIR/bin/clean.sh" ;;
                     2) exec "$SCRIPT_DIR/bin/uninstall.sh" ;;
-                    3) exec "$SCRIPT_DIR/bin/analyze.sh" ;;
-                    4) exec "$SCRIPT_DIR/bin/optimize.sh" ;;
+                    3) exec "$SCRIPT_DIR/bin/optimize.sh" ;;
+                    4) exec "$SCRIPT_DIR/bin/analyze.sh" ;;
                 esac
                 ;;
         esac

@@ -109,6 +109,45 @@ ensure_directory() {
 	mkdir -p "$expanded_path" > /dev/null 2>&1 || true
 }
 
+list_login_items() {
+	local raw_items
+	raw_items=$(osascript -e 'tell application "System Events" to get the name of every login item' 2> /dev/null || echo "")
+	[[ -z "$raw_items" || "$raw_items" == "missing value" ]] && return
+
+	IFS=',' read -ra login_items_array <<< "$raw_items"
+	for entry in "${login_items_array[@]}"; do
+		local trimmed
+		trimmed=$(echo "$entry" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+		[[ -n "$trimmed" ]] && printf "%s\n" "$trimmed"
+	done
+}
+
+SUDO_KEEPALIVE_PID=""
+
+start_sudo_keepalive() {
+	[[ -n "$SUDO_KEEPALIVE_PID" ]] && return
+
+	(
+		while true; do
+			if ! sudo -n true 2> /dev/null; then
+				exit 0
+			fi
+			sleep 30
+		done
+	) &
+	SUDO_KEEPALIVE_PID=$!
+}
+
+stop_sudo_keepalive() {
+	if [[ -n "$SUDO_KEEPALIVE_PID" ]]; then
+		kill "$SUDO_KEEPALIVE_PID" 2> /dev/null || true
+		wait "$SUDO_KEEPALIVE_PID" 2> /dev/null || true
+		SUDO_KEEPALIVE_PID=""
+	fi
+}
+
+trap stop_sudo_keepalive EXIT
+
 count_local_snapshots() {
 	if ! command -v tmutil > /dev/null 2>&1; then
 		echo 0
@@ -340,12 +379,6 @@ execute_optimization() {
 			fi
 			;;
 
-		login_items)
-			echo -e "${BLUE}${ICON_ARROW}${NC} Listing login items..."
-			osascript -e 'tell application "System Events" to get the name of every login item' 2> /dev/null | sed 's/, /\n  • /g; s/^/  • /'
-			echo -e "${GRAY}Use System Settings → General → Login Items to disable entries you don't need.${NC}"
-			;;
-
 		startup_cache)
 			echo -e "${BLUE}${ICON_ARROW}${NC} Rebuilding kext caches..."
 			if sudo kextcache -i / > /dev/null 2>&1; then
@@ -418,6 +451,9 @@ execute_optimization() {
 }
 
 main() {
+	if [[ -t 1 ]]; then
+		clear
+	fi
 	print_header
 
 	# Check dependencies
@@ -463,8 +499,8 @@ main() {
 		fi
 	done < <(parse_optimizations "$health_json")
 
-	# Simple confirmation
-	echo -ne "${PURPLE}${ICON_ARROW}${NC} Press ${GREEN}Enter${NC} to optimize, ${GRAY}ESC${NC} to cancel: "
+	# Simple confirmation with sudo context
+	echo -ne "${PURPLE}${ICON_ARROW}${NC} System optimizations need admin access — ${GREEN}Enter${NC} Touch ID/password, ${GRAY}ESC${NC} cancel: "
 
 	IFS= read -r -s -n1 key || key=""
 	case "$key" in
@@ -477,6 +513,12 @@ main() {
 			;;
 		"" | $'\n' | $'\r')
 			printf "\r\033[K"
+			if ! request_sudo_access "System optimizations require admin access"; then
+				echo ""
+				echo -e "${YELLOW}Authentication failed${NC}"
+				exit 1
+			fi
+			start_sudo_keepalive
 			;;
 		*)
 			echo ""
@@ -506,6 +548,28 @@ main() {
 			announce_action "$name" "$desc" "confirm"
 			execute_optimization "$action" "$path"
 		done
+	fi
+
+	# Show login item reminder at the end of optimization log
+	local -a login_items_list=()
+	while IFS= read -r login_item; do
+		[[ -n "$login_item" ]] && login_items_list+=("$login_item")
+	done < <(list_login_items || true)
+
+	if (( ${#login_items_list[@]} > 0 )); then
+		local display_count=${#login_items_list[@]}
+		echo ""
+		echo -e "${BLUE}${ICON_ARROW}${NC} Login items (${display_count}) auto-start at login:"
+		local preview_limit=5
+		(( preview_limit > display_count )) && preview_limit=$display_count
+		for ((i = 0; i < preview_limit; i++)); do
+			printf "    • %s\n" "${login_items_list[$i]}"
+		done
+		if (( display_count > preview_limit )); then
+			local remaining=$((display_count - preview_limit))
+			echo "    • …and $remaining more"
+		fi
+		echo -e "${GRAY}Review System Settings → General → Login Items to trim extras.${NC}"
 	fi
 
 	echo ""
