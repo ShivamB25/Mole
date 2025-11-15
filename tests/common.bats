@@ -95,8 +95,19 @@ teardown() {
 }
 
 @test "drain_pending_input clears stdin buffer" {
-    # Test that drain_pending_input doesn't hang
-    result=$(echo -e "test\ninput" | HOME="$HOME" timeout 1 bash --noprofile --norc -c "source '$PROJECT_ROOT/lib/common.sh'; drain_pending_input; echo done")
+    # Test that drain_pending_input doesn't hang (using background job with timeout)
+    result=$(
+        (echo -e "test\ninput" | HOME="$HOME" bash --noprofile --norc -c "source '$PROJECT_ROOT/lib/common.sh'; drain_pending_input; echo done") &
+        pid=$!
+        sleep 2
+        if kill -0 "$pid" 2> /dev/null; then
+            kill "$pid" 2> /dev/null || true
+            wait "$pid" 2> /dev/null || true
+            echo "timeout"
+        else
+            wait "$pid" 2> /dev/null || true
+        fi
+    )
     [[ "$result" == "done" ]]
 }
 

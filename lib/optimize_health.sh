@@ -101,7 +101,11 @@ check_startup_items() {
     )
 
     for dir in "${dirs[@]}"; do
-        [[ -d "$dir" ]] && count=$((count + $(ls -1 "$dir" 2> /dev/null | wc -l)))
+        if [[ -d "$dir" ]]; then
+            local dir_count
+            dir_count=$(find "$dir" -maxdepth 1 -type f -name "*.plist" 2> /dev/null | wc -l)
+            count=$((count + dir_count))
+        fi
     done
 
     if [[ $count -gt 5 ]]; then

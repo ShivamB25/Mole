@@ -28,6 +28,8 @@ echo ""
 echo "✓ Build complete!"
 echo ""
 file bin/analyze-go
-ls -lh bin/analyze-go | awk '{print "Size:", $5}'
+size_bytes=$(stat -f%z bin/analyze-go 2> /dev/null || echo 0)
+size_mb=$((size_bytes / 1024 / 1024))
+printf "Size: %d MB (%d bytes)\n" "$size_mb" "$size_bytes"
 echo ""
 echo "Binary supports: arm64 (Apple Silicon) + x86_64 (Intel)"

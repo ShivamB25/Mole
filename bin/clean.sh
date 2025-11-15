@@ -15,7 +15,7 @@ source "$SCRIPT_DIR/../lib/common.sh"
 # Configuration
 SYSTEM_CLEAN=false
 DRY_RUN=false
-IS_M_SERIES=$([ "$(uname -m)" = "arm64" ] && echo "true" || echo "false")
+IS_M_SERIES=$([[ "$(uname -m)" == "arm64" ]] && echo "true" || echo "false")
 
 # Constants
 readonly MAX_PARALLEL_JOBS=15 # Maximum parallel background jobs
@@ -404,9 +404,9 @@ clean_ds_store_tree() {
     )
 
     # Limit depth for HOME to avoid slow scans
-    local max_depth=""
+    local -a max_depth=()
     if [[ "$target" == "$HOME" ]]; then
-        max_depth="-maxdepth 5"
+        max_depth=(-maxdepth 5)
     fi
 
     # Find .DS_Store files with exclusions and depth limit
@@ -423,7 +423,7 @@ clean_ds_store_tree() {
         if [[ $file_count -ge 500 ]]; then
             break
         fi
-    done < <(find "$target" $max_depth "${exclude_paths[@]}" -type f -name '.DS_Store' -print0 2> /dev/null)
+    done < <(find "$target" "${max_depth[@]}" "${exclude_paths[@]}" -type f -name '.DS_Store' -print0 2> /dev/null)
 
     if [[ "$spinner_active" == "true" ]]; then
         stop_inline_spinner
@@ -1243,19 +1243,18 @@ perform_cleanup() {
 
     # Define resource types to scan
     local -a resource_types=(
-        "~/Library/Caches|Caches|com.*:org.*:net.*:io.*"
-        "~/Library/Logs|Logs|com.*:org.*:net.*:io.*"
-        "~/Library/Saved Application State|States|*.savedState"
-        "~/Library/WebKit|WebKit|com.*:org.*:net.*:io.*"
-        "~/Library/HTTPStorages|HTTP|com.*:org.*:net.*:io.*"
-        "~/Library/Cookies|Cookies|*.binarycookies"
+        "$HOME/Library/Caches|Caches|com.*:org.*:net.*:io.*"
+        "$HOME/Library/Logs|Logs|com.*:org.*:net.*:io.*"
+        "$HOME/Library/Saved Application State|States|*.savedState"
+        "$HOME/Library/WebKit|WebKit|com.*:org.*:net.*:io.*"
+        "$HOME/Library/HTTPStorages|HTTP|com.*:org.*:net.*:io.*"
+        "$HOME/Library/Cookies|Cookies|*.binarycookies"
     )
 
     orphaned_count=0
 
     for resource_type in "${resource_types[@]}"; do
         IFS='|' read -r base_path label patterns <<< "$resource_type"
-        base_path="${base_path/#\~/$HOME}"
 
         [[ -d "$base_path" ]] || continue
 
