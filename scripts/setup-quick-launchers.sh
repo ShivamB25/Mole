@@ -408,7 +408,6 @@ main() {
     echo "  • optimize - System health & tuning"
     echo "  • analyze - Disk space explorer"
     echo "  • status - Live system monitor"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
 }
 

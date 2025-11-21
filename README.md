@@ -186,13 +186,7 @@ curl -fsSL https://raw.githubusercontent.com/tw93/Mole/main/scripts/setup-quick-
 
 Adds 5 commands: `clean`, `uninstall`, `optimize`, `analyze`, `status`. Auto-detects your terminal or set `MO_LAUNCHER_APP=<name>` to override.
 
-**Reload Raycast scripts after installation:**
-
-1. Open Raycast (⌘ Space)
-2. Search for "Reload Script Directories"
-3. Press Enter to activate new commands
-
-Alternatively, restart Raycast to load the new scripts.
+Reload Raycast scripts by opening Raycast with ⌘ Space, running Reload Script Directories, or simply restarting Raycast.
 
 ## Support
 
