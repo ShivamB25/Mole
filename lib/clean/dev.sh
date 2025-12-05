@@ -132,6 +132,14 @@ clean_dev_frontend() {
 
 # Clean mobile development tools
 clean_dev_mobile() {
+    # Clean Xcode unavailable simulators
+    # Removes old and unused local iOS simulator data from old unused runtimes
+    # Can free up significant space (70GB+ in some cases)
+    if command -v xcrun > /dev/null 2>&1; then
+        clean_tool_cache "Xcode unavailable simulators" xcrun simctl delete unavailable
+        note_activity
+    fi
+
     safe_clean ~/Library/Caches/Google/AndroidStudio*/* "Android Studio cache"
     safe_clean ~/Library/Caches/CocoaPods/* "CocoaPods cache"
     safe_clean ~/.cache/flutter/* "Flutter cache"
