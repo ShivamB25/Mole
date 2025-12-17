@@ -85,9 +85,9 @@ scan_applications() {
             # Cache hit - return immediately
             # Show brief flash of cache usage if in interactive mode
             if [[ -t 2 ]]; then
-                 echo -e "${GREEN}Loading from cache...${NC}" >&2
-                 # Small sleep to let user see it (optional, but good for "feeling" the speed vs glitch)
-                 sleep 0.3
+                echo -e "${GREEN}Loading from cache...${NC}" >&2
+                # Small sleep to let user see it (optional, but good for "feeling" the speed vs glitch)
+                sleep 0.3
             fi
             echo "$cache_file"
             return 0

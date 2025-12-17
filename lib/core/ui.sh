@@ -79,7 +79,6 @@ truncate_by_display_width() {
         return
     fi
 
-
     # Fallback: Use pure bash character iteration
     # Since we need to know the width of *each* character to truncate at the right spot,
     # we cannot just use the total width formula on the whole string.
