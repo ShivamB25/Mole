@@ -1,6 +1,6 @@
 #!/bin/bash
 # Mole - UI Components
-# Terminal UI utilities: cursor control, keyboard input, spinners, menus
+# Terminal UI utilities: keyboard input, spinners, menus, display helpers
 
 set -euo pipefail
 
@@ -12,10 +12,8 @@ readonly MOLE_UI_LOADED=1
 _MOLE_CORE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 [[ -z "${MOLE_BASE_LOADED:-}" ]] && source "$_MOLE_CORE_DIR/base.sh"
 
-# Cursor control
-clear_screen() { printf '\033[2J\033[H'; }
-hide_cursor() { [[ -t 1 ]] && printf '\033[?25l' >&2 || true; }
-show_cursor() { [[ -t 1 ]] && printf '\033[?25h' >&2 || true; }
+# Source terminal control (provides: clear_screen, hide_cursor, show_cursor, ANSI_* constants)
+[[ -z "${MOLE_UI_TERMINAL_LOADED:-}" ]] && source "$_MOLE_CORE_DIR/ui_terminal.sh"
 
 # Calculate display width (CJK characters count as 2)
 get_display_width() {

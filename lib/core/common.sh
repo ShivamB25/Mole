@@ -12,18 +12,25 @@ readonly MOLE_COMMON_LOADED=1
 
 _MOLE_CORE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Load core modules
+# Load core modules (order matters - base dependencies first)
 source "$_MOLE_CORE_DIR/base.sh"
 source "$_MOLE_CORE_DIR/log.sh"
+source "$_MOLE_CORE_DIR/errors.sh"
 
 source "$_MOLE_CORE_DIR/timeout.sh"
 source "$_MOLE_CORE_DIR/file_ops.sh"
-source "$_MOLE_CORE_DIR/ui.sh"
+source "$_MOLE_CORE_DIR/ui_terminal.sh"  # Load terminal control first (low-level)
+source "$_MOLE_CORE_DIR/ui.sh"            # Then UI components (sources ui_terminal.sh)
 source "$_MOLE_CORE_DIR/app_protection.sh"
 
 # Load sudo management if available
 if [[ -f "$_MOLE_CORE_DIR/sudo.sh" ]]; then
     source "$_MOLE_CORE_DIR/sudo.sh"
+fi
+
+# Load Go interface if available
+if [[ -f "$_MOLE_CORE_DIR/go_interface.sh" ]]; then
+    source "$_MOLE_CORE_DIR/go_interface.sh"
 fi
 
 # Update via Homebrew

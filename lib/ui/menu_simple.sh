@@ -3,48 +3,17 @@
 
 set -euo pipefail
 
-# Terminal control functions
-enter_alt_screen() { tput smcup 2> /dev/null || true; }
-leave_alt_screen() { tput rmcup 2> /dev/null || true; }
+# Load shared terminal utilities
+_MOLE_UI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_MOLE_CORE_DIR="$(dirname "$_MOLE_UI_DIR")/core"
+# shellcheck source=lib/core/ui_terminal.sh
+source "$_MOLE_CORE_DIR/ui_terminal.sh"
 
-# Get terminal height with fallback
-_ms_get_terminal_height() {
-    local height=0
-
-    # Try stty size first (most reliable, real-time)
-    # Use </dev/tty to ensure we read from terminal even if stdin is redirected
-    if [[ -t 0 ]] || [[ -t 2 ]]; then
-        height=$(stty size < /dev/tty 2> /dev/null | awk '{print $1}')
-    fi
-
-    # Fallback to tput
-    if [[ -z "$height" || $height -le 0 ]]; then
-        if command -v tput > /dev/null 2>&1; then
-            height=$(tput lines 2> /dev/null || echo "24")
-        else
-            height=24
-        fi
-    fi
-
-    echo "$height"
-}
-
-# Calculate dynamic items per page based on terminal height
-_ms_calculate_items_per_page() {
-    local term_height=$(_ms_get_terminal_height)
-    # Layout: header(1) + spacing(1) + items + spacing(1) + footer(1) + clear(1) = 5 fixed lines
-    local reserved=6 # Increased to prevent header from being overwritten
-    local available=$((term_height - reserved))
-
-    # Ensure minimum and maximum bounds
-    if [[ $available -lt 1 ]]; then
-        echo 1
-    elif [[ $available -gt 50 ]]; then
-        echo 50
-    else
-        echo "$available"
-    fi
-}
+# Backward compatibility aliases (deprecated - use terminal_* functions directly)
+enter_alt_screen() { terminal_enter_alt_screen; }
+leave_alt_screen() { terminal_leave_alt_screen; }
+_ms_get_terminal_height() { terminal_get_height; }
+_ms_calculate_items_per_page() { terminal_calculate_items_per_page 6; }
 
 # Main paginated multi-select menu function
 paginated_multi_select() {
